@@ -23,3 +23,17 @@ node_modules/
 *.mp3
 *.wav
 *.zip
+
+# n8n
+.n8n/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Temporary
+*.tmp
+*.log
+
+# Generated data
+13_Data/generated_topics.json
