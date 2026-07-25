@@ -1,3 +1,4 @@
+# Generated content
 03_Voices/
 04_Videos/
 05_Captions/
@@ -7,9 +8,18 @@
 10_Logs/
 12_Backup/
 14_Working/
+
+# FFmpeg
+Tools/ffmpeg/
+
+# Node
 node_modules/
+
+# Environment
+.env
+
+# Media
 *.mp4
 *.mp3
 *.wav
 *.zip
-.env
