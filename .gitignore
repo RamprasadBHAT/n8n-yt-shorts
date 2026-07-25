@@ -1,0 +1,15 @@
+03_Voices/
+04_Videos/
+05_Captions/
+06_Thumbnails/
+08_Queue/
+09_Uploaded/
+10_Logs/
+12_Backup/
+14_Working/
+node_modules/
+*.mp4
+*.mp3
+*.wav
+*.zip
+.env
