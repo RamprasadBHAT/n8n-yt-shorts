@@ -1,0 +1,16 @@
+{
+  "project_name": "AI Shorts Factory",
+  "project_root": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS",
+  "scripts_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\02_Scripts",
+  "voices_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\03_Voices",
+  "videos_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\04_Videos",
+  "captions_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\05_Captions",
+  "assets_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\07_Assets",
+  "queue_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\08_Queue",
+  "uploaded_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\09_Uploaded",
+  "logs_folder": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\10_Logs",
+  "ffmpeg_path": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS\\Tools\\ffmpeg\\bin\\ffmpeg.exe",
+  "videos_per_batch": 10,
+  "videos_per_day": 2,
+  "video_duration_seconds": 35
+}
