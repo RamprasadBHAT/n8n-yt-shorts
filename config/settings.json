@@ -81,11 +81,5 @@
   "logging": {
     "file": "logs/factory.log",
     "level": "INFO"
-  },
-  "research": {
-    "rss_feeds": [
-      "https://www.theverge.com/rss/index.xml",
-      "https://techcrunch.com/feed/"
-    ]
   }
 }

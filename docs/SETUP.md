@@ -8,7 +8,3 @@
 6. Run the master workflow in n8n.
 
 The default YouTube privacy is `private` for safe production validation before public publishing.
-
-## Import option
-
-Import only `workflows/08_Master_Workflow.json`. If old 01-07 workflows are already in n8n, delete them from n8n and import the master workflow again.

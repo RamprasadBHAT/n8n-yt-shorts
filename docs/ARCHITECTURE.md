@@ -2,14 +2,14 @@
 
 ```mermaid
 flowchart TD
-  A[08 Master Workflow in n8n] --> B[research_engine.py]
-  B --> C[script_generator.py]
-  C --> D[voice.py]
-  D --> E[subtitles.py]
-  E --> F[render_video.py]
-  F --> G[generate_thumbnail.py]
-  G --> H[youtube_upload.py]
-  H --> I[logs + state]
+  A[08 Master Workflow] --> B[01 Research Engine]
+  B --> C[02 Script Generator]
+  C --> D[03 F5-TTS Voice]
+  D --> E[04 Subtitles]
+  E --> F[05 Video Generator]
+  F --> G[06 Thumbnail Generator]
+  G --> H[07 YouTube Uploader]
+  H --> I[Logs + State]
 ```
 
-The system is Python-first. n8n is intentionally small and reliable: it uses only standard trigger, set, execute-command, read-file, and code nodes to run complete Python programs in sequence. All API integrations, retries, duplicate detection, rendering, caption generation, thumbnail creation, scheduling, and uploads live in Python.
+The n8n layer orchestrates idempotent Python scripts. Python owns API calls, media processing, retry behavior, filesystem state, and upload logic. Generated artifacts are stored in deterministic folders by job id, allowing failed runs to be resumed or repeated safely.

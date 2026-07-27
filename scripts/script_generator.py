@@ -1,42 +1,15 @@
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
-from gemini_client import GeminiClient
-from logging import get_logger, write_event
-log=get_logger('script_generator')
-REQUIRED={'title','hook','script','description','hashtags','cta','visual_beats'}
+from config import load_settings
+from logging import write_event
 
-def validate(item: dict) -> dict:
-    missing=REQUIRED-set(item)
-    if missing: raise RuntimeError(f'Gemini script response missing fields: {sorted(missing)}')
-    words=str(item['script']).split()
-    if not 85 <= len(words) <= 125:
-        log.warning('Script word count is %s; expected approximately 40 seconds.', len(words))
-    item['hashtags']=[h if str(h).startswith('#') else f'#{h}' for h in item.get('hashtags', [])]
-    return item
-
-def generate_for_topic(topic: dict, client: GeminiClient, prompt_template: str) -> dict:
-    prompt=f"""{prompt_template}
-Topic record:
-{json.dumps(topic, ensure_ascii=False)}
-Return one strict JSON object only. The script must be factual, original, safe for YouTube, and timed for about 40 seconds.
-"""
-    data=client.generate_json(prompt, temperature=0.8)
-    if isinstance(data, list): data=data[0]
-    data['id']=topic.get('id') or data.get('id')
-    data['topic']=topic.get('topic') or topic.get('title')
-    data['keywords']=topic.get('keywords','')
-    return validate(data)
-
+def local_script(t):
+    title=t['title'][:70]; hook=f"This could change everything: {title}."
+    body=f"{hook} Here is the simple version. A new development is getting attention because it affects creators, developers, and everyday users. The key detail is not the headline, it is what happens next: faster tools, new risks, and a race to adapt. Watch this space, because the winners will be the people who understand it early."
+    return {'id':t.get('id'), 'title':title, 'hook':hook, 'script':body, 'description':body+' Subscribe for daily AI and tech Shorts.', 'hashtags':['#AI','#Tech','#Shorts'], 'cta':'Follow for the next update.', 'visual_beats':['headline','problem','impact','future']}
 def main(topics='output/topics.json', output='output/scripts.json'):
-    topic_data=json.loads(Path(topics).read_text(encoding='utf-8'))
-    prompt_path=Path('prompts/script_prompt.txt')
-    template=prompt_path.read_text(encoding='utf-8')
-    client=GeminiClient()
-    scripts=[generate_for_topic(t, client, template) for t in topic_data]
-    Path(output).parent.mkdir(parents=True, exist_ok=True)
-    Path(output).write_text(json.dumps(scripts, indent=2, ensure_ascii=False), encoding='utf-8')
-    write_event('scripts_generated', {'count': len(scripts), 'output': output})
-    print(json.dumps(scripts, indent=2, ensure_ascii=False))
+    items=json.loads(Path(topics).read_text(encoding='utf-8')); scripts=[local_script(x) for x in items]
+    Path(output).write_text(json.dumps(scripts,indent=2),encoding='utf-8'); write_event('scripts_generated',{'count':len(scripts)}); print(json.dumps(scripts,indent=2))
 if __name__=='__main__':
     ap=argparse.ArgumentParser(); ap.add_argument('--topics',default='output/topics.json'); ap.add_argument('--output',default='output/scripts.json'); main(**vars(ap.parse_args()))

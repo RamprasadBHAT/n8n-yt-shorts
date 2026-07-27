@@ -3,71 +3,12 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "db6252b1-33cf-4383-b52f-72433d11efed",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
         0,
-        120
-      ]
-    },
-    {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "days",
-              "triggerAtHour": 9
-            }
-          ]
-        }
-      },
-      "id": "e3a2f23a-7d85-4f0e-80f7-a834439ee120",
-      "name": "Daily Schedule",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        -120
-      ]
-    },
-    {
-      "parameters": {
-        "values": {
-          "number": [
-            {
-              "name": "batchSize",
-              "value": 10
-            }
-          ],
-          "string": [
-            {
-              "name": "queue",
-              "value": "output/scripts.json"
-            }
-          ]
-        }
-      },
-      "id": "ca4e2f59-23fc-4014-b22c-0d14bf5720a1",
-      "name": "Set Batch Settings",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 1,
-      "position": [
-        240,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "command": "python -c \"from pathlib import Path; [Path(p).mkdir(exist_ok=True) for p in ['output','logs','audio','videos','captions','thumbnails','temp','state','cache']]\""
-      },
-      "id": "16565de8-e7ad-415b-ab1d-4178b7054aea",
-      "name": "Initialize Folders",
-      "type": "n8n-nodes-base.executeCommand",
-      "typeVersion": 1,
-      "position": [
-        480,
         0
       ]
     },
@@ -75,145 +16,38 @@
       "parameters": {
         "command": "python scripts/research_engine.py --limit 10 --output output/topics.json"
       },
-      "id": "91eab57f-3686-4720-a167-7da2cf27d010",
-      "name": "Research Topics",
+      "id": "n1",
+      "name": "01 Research",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        720,
+        260,
         0
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "read",
-        "filePath": "output/topics.json"
-      },
-      "id": "0de1b7d7-64df-496f-b212-85a9681f6c04",
-      "name": "Read Topics",
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
-      "position": [
-        960,
-        -80
       ]
     },
     {
       "parameters": {
         "command": "python scripts/script_generator.py --topics output/topics.json --output output/scripts.json"
       },
-      "id": "891c4815-e5fb-4a25-91d7-ffb8f3faf865",
-      "name": "Generate Scripts",
+      "id": "n2",
+      "name": "02 Scripts",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        1200,
+        520,
         0
       ]
     },
     {
       "parameters": {
-        "operation": "read",
-        "filePath": "output/scripts.json"
+        "command": "python scripts/scheduler.py --queue output/scripts.json --upload"
       },
-      "id": "97db8149-0c8e-4905-a5ae-3c886a9247a9",
-      "name": "Read Scripts",
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
-      "position": [
-        1440,
-        -80
-      ]
-    },
-    {
-      "parameters": {
-        "command": "python scripts/voice.py --queue output/scripts.json"
-      },
-      "id": "e53f6162-0733-4187-a59f-573da2867e17",
-      "name": "Generate Voice",
+      "id": "n3",
+      "name": "03 Process batch",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        1680,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "command": "python scripts/subtitles.py --queue output/scripts.json"
-      },
-      "id": "7d474c8f-4dbf-4066-9539-1049202eba70",
-      "name": "Generate Subtitles",
-      "type": "n8n-nodes-base.executeCommand",
-      "typeVersion": 1,
-      "position": [
-        1920,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "command": "python scripts/render_video.py --queue output/scripts.json"
-      },
-      "id": "0533779e-99f4-41eb-8d84-bc5bb4d60629",
-      "name": "Render Videos",
-      "type": "n8n-nodes-base.executeCommand",
-      "typeVersion": 1,
-      "position": [
-        2160,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "command": "python scripts/generate_thumbnail.py --queue output/scripts.json"
-      },
-      "id": "6ffd09a0-fd6b-4010-beac-f2af76057a38",
-      "name": "Generate Thumbnails",
-      "type": "n8n-nodes-base.executeCommand",
-      "typeVersion": 1,
-      "position": [
-        2400,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "command": "python scripts/youtube_upload.py --queue output/scripts.json"
-      },
-      "id": "c4453b1b-8934-4a20-9b09-c043e778eced",
-      "name": "Upload to YouTube",
-      "type": "n8n-nodes-base.executeCommand",
-      "typeVersion": 1,
-      "position": [
-        2640,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "read",
-        "filePath": "logs/events.jsonl"
-      },
-      "id": "efd46ee4-b6e3-4341-b26c-6cbff9216512",
-      "name": "Read Event Log",
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
-      "position": [
-        2880,
-        -80
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "return [{json:{status:'complete', finishedAt:new Date().toISOString(), message:'AI Shorts Factory batch completed'}}];"
-      },
-      "id": "fa7ce4d3-2157-48d4-85fb-0a09599b516f",
-      "name": "Log Success",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 1,
-      "position": [
-        3120,
+        780,
         0
       ]
     }
@@ -223,150 +57,29 @@
       "main": [
         [
           {
-            "node": "Set Batch Settings",
+            "node": "01 Research",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Daily Schedule": {
+    "01 Research": {
       "main": [
         [
           {
-            "node": "Set Batch Settings",
+            "node": "02 Scripts",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Batch Settings": {
+    "02 Scripts": {
       "main": [
         [
           {
-            "node": "Initialize Folders",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Initialize Folders": {
-      "main": [
-        [
-          {
-            "node": "Research Topics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Research Topics": {
-      "main": [
-        [
-          {
-            "node": "Read Topics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read Topics": {
-      "main": [
-        [
-          {
-            "node": "Generate Scripts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Generate Scripts": {
-      "main": [
-        [
-          {
-            "node": "Read Scripts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read Scripts": {
-      "main": [
-        [
-          {
-            "node": "Generate Voice",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Generate Voice": {
-      "main": [
-        [
-          {
-            "node": "Generate Subtitles",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Generate Subtitles": {
-      "main": [
-        [
-          {
-            "node": "Render Videos",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Render Videos": {
-      "main": [
-        [
-          {
-            "node": "Generate Thumbnails",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Generate Thumbnails": {
-      "main": [
-        [
-          {
-            "node": "Upload to YouTube",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upload to YouTube": {
-      "main": [
-        [
-          {
-            "node": "Read Event Log",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read Event Log": {
-      "main": [
-        [
-          {
-            "node": "Log Success",
+            "node": "03 Process batch",
             "type": "main",
             "index": 0
           }
@@ -377,20 +90,11 @@
   "settings": {
     "executionOrder": "v1",
     "saveExecutionProgress": true,
-    "saveManualExecutions": true,
-    "timezone": "America/New_York"
+    "saveManualExecutions": true
   },
   "meta": {
-    "description": "Python-first AI Shorts Factory orchestrator. n8n runs complete production Python programs in sequence using standard nodes only.",
-    "allowedStandardNodeTypes": [
-      "n8n-nodes-base.manualTrigger",
-      "n8n-nodes-base.scheduleTrigger",
-      "n8n-nodes-base.set",
-      "n8n-nodes-base.executeCommand",
-      "n8n-nodes-base.readWriteFile",
-      "n8n-nodes-base.code"
-    ]
+    "description": "One-click orchestrator for research, scripts, voice, captions, video, thumbnails, upload, logging."
   },
   "active": false,
-  "versionId": "3"
+  "versionId": "1"
 }

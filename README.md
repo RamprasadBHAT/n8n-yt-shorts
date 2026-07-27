@@ -19,7 +19,7 @@ The master n8n workflow runs the complete pipeline:
 
 ## Repository layout
 
-- `workflows/08_Master_Workflow.json` is the only n8n workflow; it orchestrates the Python application with standard Execute Command nodes.
+- `workflows/` importable n8n workflows.
 - `scripts/` Python automation modules and batch entry points.
 - `config/` runtime settings and environment template.
 - `prompts/` Gemini prompt templates.
@@ -40,7 +40,7 @@ n8n import:workflow --input workflows\08_Master_Workflow.json
 n8n start
 ```
 
-Open n8n, configure environment variables, then run **08 Master Workflow**. Do not import old 01-07 workflows; the system is Python-first now.
+Open n8n, configure credentials/environment variables, then run **08 Master Workflow**.
 
 ## Direct CLI run
 
