@@ -1,0 +1,91 @@
+{
+  "project_name": "AI Shorts Factory",
+  "project_root": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS",
+  "videos_per_batch": 10,
+  "gemini": {
+    "api_key_env": "GEMINI_API_KEY",
+    "text_model": "gemini-1.5-pro",
+    "image_model": "imagen-3.0-generate-001",
+    "endpoint": "https://generativelanguage.googleapis.com"
+  },
+  "youtube": {
+    "client_secret_file": "config/youtube_client_secret.json",
+    "token_file": "config/youtube_token.json",
+    "privacy_status": "private",
+    "made_for_kids": false,
+    "default_category_id": "28",
+    "schedule": {
+      "enabled": true,
+      "start_time": "09:00",
+      "timezone": "America/New_York",
+      "spacing_hours": 4
+    }
+  },
+  "folders": {
+    "workflows": "workflows",
+    "scripts": "scripts",
+    "config": "config",
+    "docs": "docs",
+    "prompts": "prompts",
+    "assets": "assets",
+    "output": "output",
+    "logs": "logs",
+    "audio": "audio",
+    "videos": "videos",
+    "captions": "captions",
+    "thumbnails": "thumbnails",
+    "temp": "temp",
+    "cache": "cache",
+    "state": "state"
+  },
+  "voice": {
+    "engine": "f5-tts",
+    "reference_audio": "assets/voice/reference.wav",
+    "reference_text": "assets/voice/reference.txt",
+    "speaker": "default",
+    "speed": 1.0,
+    "normalize_lufs": -16
+  },
+  "rendering": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 60,
+    "duration_seconds": 40,
+    "video_bitrate": "8000k",
+    "audio_bitrate": "192k",
+    "subtitle_style": "Fontname=Arial,Fontsize=74,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=5,Shadow=0,Alignment=2,MarginV=210"
+  },
+  "ffmpeg_path": "ffmpeg",
+  "ffprobe_path": "ffprobe",
+  "whisper": {
+    "command": "whisper",
+    "model": "medium",
+    "language": "en"
+  },
+  "f5_tts": {
+    "command": "f5-tts_infer-cli"
+  },
+  "stock": {
+    "provider": "pexels",
+    "api_key_env": "PEXELS_API_KEY",
+    "fallback_assets_dir": "assets/stock"
+  },
+  "retry": {
+    "attempts": 3,
+    "backoff_seconds": 20
+  },
+  "dedupe": {
+    "state_file": "state/used_topics.json",
+    "similarity_threshold": 0.86
+  },
+  "logging": {
+    "file": "logs/factory.log",
+    "level": "INFO"
+  },
+  "research": {
+    "rss_feeds": [
+      "https://www.theverge.com/rss/index.xml",
+      "https://techcrunch.com/feed/"
+    ]
+  }
+}
