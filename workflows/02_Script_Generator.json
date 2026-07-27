@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "439c927b-e367-499b-93a1-023bc62d9198",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -104,6 +104,14 @@
       "typeVersion": 1,
       "position": [
         1420,
+        "command": "python scripts/script_generator.py --topics output/topics.json --output output/scripts.json"
+      },
+      "id": "n1",
+      "name": "01 Generate scripts",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
         0
       ]
     }
@@ -169,6 +177,7 @@
         [
           {
             "node": "Read Scripts File",
+            "node": "01 Generate scripts",
             "type": "main",
             "index": 0
           }
@@ -198,4 +207,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Generates title, hook, 40-second script, description, hashtags and CTA."
+  },
+  "active": false,
+  "versionId": "1"
 }

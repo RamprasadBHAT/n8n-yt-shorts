@@ -24,12 +24,15 @@
     {
       "parameters": {},
       "id": "4f0f927e-e8d9-4368-b8fa-51e4fcc5a03d",
+      "parameters": {},
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
         0,
         120
+        0
       ]
     },
     {
@@ -38,6 +41,10 @@
       },
       "id": "25262dd3-e04e-42a4-9299-8c0feac3a858",
       "name": "Initialize Run",
+        "command": "python scripts/research_engine.py --limit 10 --output output/topics.json"
+      },
+      "id": "n1",
+      "name": "01 Research",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
@@ -67,6 +74,11 @@
       "id": "967802c4-1a8c-484a-8d0c-1db77d5133bd",
       "name": "Fetch Hacker News",
       "type": "n8n-nodes-base.httpRequest",
+        "command": "python scripts/script_generator.py --topics output/topics.json --output output/scripts.json"
+      },
+      "id": "n2",
+      "name": "02 Scripts",
+      "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
         520,
@@ -163,6 +175,14 @@
       "typeVersion": 1,
       "position": [
         1960,
+        "command": "python scripts/scheduler.py --queue output/scripts.json --upload"
+      },
+      "id": "n3",
+      "name": "03 Process batch",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        780,
         0
       ]
     }
@@ -271,6 +291,7 @@
         [
           {
             "node": "Generate Scripts",
+            "node": "01 Research",
             "type": "main",
             "index": 0
           }
@@ -282,6 +303,11 @@
         [
           {
             "node": "Process Voice Captions Video Thumbnail Upload",
+    "01 Research": {
+      "main": [
+        [
+          {
+            "node": "02 Scripts",
             "type": "main",
             "index": 0
           }
@@ -293,6 +319,11 @@
         [
           {
             "node": "Read Event Log",
+    "02 Scripts": {
+      "main": [
+        [
+          {
+            "node": "03 Process batch",
             "type": "main",
             "index": 0
           }
@@ -322,4 +353,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "One-click orchestrator for research, scripts, voice, captions, video, thumbnails, upload, logging."
+  },
+  "active": false,
+  "versionId": "1"
 }

@@ -4,6 +4,7 @@
     {
       "parameters": {},
       "id": "00d4e0d1-561c-4d83-aca5-47c30777b5fc",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -82,6 +83,14 @@
       "typeVersion": 2,
       "position": [
         1180,
+        "command": "python scripts/upload_batch.py --queue output/scripts.json"
+      },
+      "id": "n1",
+      "name": "01 Upload videos",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
         0
       ]
     }
@@ -136,6 +145,7 @@
         [
           {
             "node": "Log Step Completion",
+            "node": "01 Upload videos",
             "type": "main",
             "index": 0
           }
@@ -165,4 +175,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Uploads or schedules completed Shorts with thumbnails via YouTube Data API."
+  },
+  "active": false,
+  "versionId": "1"
 }

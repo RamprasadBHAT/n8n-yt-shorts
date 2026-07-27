@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "c90b4e6e-36e7-47d7-88ff-207d2f414d30",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -34,6 +34,11 @@
       "id": "041db806-0d16-41e2-b69b-d52a24fd5986",
       "name": "Hacker News RSS",
       "type": "n8n-nodes-base.httpRequest",
+        "command": "python scripts/research_engine.py --limit 10 --output output/topics.json"
+      },
+      "id": "n1",
+      "name": "01 Research topics",
+      "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
         260,
@@ -216,6 +221,7 @@
           },
           {
             "node": "Read Topics File",
+            "node": "01 Research topics",
             "type": "main",
             "index": 0
           }
@@ -245,4 +251,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Collects Google Trends, Reddit, Hacker News, RSS; ranks with Gemini; deduplicates to 10 topics."
+  },
+  "active": false,
+  "versionId": "1"
 }

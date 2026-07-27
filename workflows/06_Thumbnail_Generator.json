@@ -4,6 +4,7 @@
     {
       "parameters": {},
       "id": "0f05bbf9-57e6-4596-88f0-4d7391749a80",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -82,6 +83,14 @@
       "typeVersion": 2,
       "position": [
         1180,
+        "command": "python scripts/thumbnail_batch.py --queue output/scripts.json"
+      },
+      "id": "n1",
+      "name": "01 Generate thumbnails",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
         0
       ]
     }
@@ -136,6 +145,7 @@
         [
           {
             "node": "Log Step Completion",
+            "node": "01 Generate thumbnails",
             "type": "main",
             "index": 0
           }
@@ -165,4 +175,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Builds clickable thumbnails for each Short."
+  },
+  "active": false,
+  "versionId": "1"
 }

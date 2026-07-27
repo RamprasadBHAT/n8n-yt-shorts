@@ -4,6 +4,7 @@
     {
       "parameters": {},
       "id": "4785e16e-f62b-455d-a180-0e210b3ed5a8",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -82,6 +83,14 @@
       "typeVersion": 2,
       "position": [
         1180,
+        "command": "python scripts/video_batch.py --queue output/scripts.json"
+      },
+      "id": "n1",
+      "name": "01 Render videos",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
         0
       ]
     }
@@ -136,6 +145,7 @@
         [
           {
             "node": "Log Step Completion",
+            "node": "01 Render videos",
             "type": "main",
             "index": 0
           }
@@ -165,4 +175,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Downloads/generates visuals and renders 1080x1920 60fps Shorts with FFmpeg."
+  },
+  "active": false,
+  "versionId": "1"
 }

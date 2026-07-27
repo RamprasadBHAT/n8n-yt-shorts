@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "d6fd2abb-8367-478d-993c-05084f0d589c",
+      "id": "manual",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
@@ -82,6 +82,14 @@
       "typeVersion": 2,
       "position": [
         1180,
+        "command": "python scripts/voice_batch.py --queue output/scripts.json"
+      },
+      "id": "n1",
+      "name": "01 Run voice batch",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
         0
       ]
     }
@@ -136,6 +144,7 @@
         [
           {
             "node": "Log Step Completion",
+            "node": "01 Run voice batch",
             "type": "main",
             "index": 0
           }
@@ -165,4 +174,11 @@
   },
   "active": false,
   "versionId": "2"
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Creates cloned voice WAV files and normalizes loudness."
+  },
+  "active": false,
+  "versionId": "1"
 }
