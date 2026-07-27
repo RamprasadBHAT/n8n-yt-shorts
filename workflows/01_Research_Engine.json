@@ -1,0 +1,52 @@
+{
+  "name": "01 Research Engine",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python scripts/research_engine.py --limit 10 --output output/topics.json"
+      },
+      "id": "n1",
+      "name": "01 Research topics",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        260,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "01 Research topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true
+  },
+  "meta": {
+    "description": "Collects Google Trends, Reddit, Hacker News, RSS; ranks with Gemini; deduplicates to 10 topics."
+  },
+  "active": false,
+  "versionId": "1"
+}
