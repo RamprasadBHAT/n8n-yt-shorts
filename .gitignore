@@ -37,3 +37,23 @@ Desktop.ini
 
 # Generated data
 13_Data/generated_topics.json
+# AI Shorts Factory runtime artifacts
+logs/*.jsonl
+output/*.json
+state/*.json
+temp/*
+!temp/.gitkeep
+audio/*
+!audio/.gitkeep
+videos/*
+!videos/.gitkeep
+captions/*
+!captions/.gitkeep
+thumbnails/*
+!thumbnails/.gitkeep
+cache/*
+!cache/.gitkeep
+config/youtube_client_secret.json
+config/youtube_token.json
+assets/voice/*.wav
+assets/voice/*.txt
