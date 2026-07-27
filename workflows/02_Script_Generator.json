@@ -1,0 +1,201 @@
+{
+  "name": "02 Script Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "439c927b-e367-499b-93a1-023bc62d9198",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/topics.json"
+      },
+      "id": "3905cd66-a600-4c02-858b-968551a9806b",
+      "name": "Read Topics JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); return JSON.parse(fs.readFileSync('output/topics.json','utf8')).map(json=>({json}));"
+      },
+      "id": "b9f4a88d-3506-4aef-8b03-12bb5ab5d6ae",
+      "name": "Load Topics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "prompt",
+              "value": "={{$json.title}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "6929d71b-d4f2-4337-9c90-31027c52da78",
+      "name": "Prepare Gemini Request",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst fs = require('fs');\nfunction scriptFor(t){ const title=String(t.title).slice(0,70); const hook=`This could change everything: ${title}.`; const script=`${hook} Here is the simple version. A new development is getting attention because it affects creators, developers, and everyday users. The key detail is not the headline, it is what happens next: faster tools, new risks, and a race to adapt. Watch this space, because the winners will be the people who understand it early.`; return {...t,title,hook,script,description:`${script} Subscribe for daily AI and tech Shorts.`,hashtags:['#AI','#Tech','#Shorts'],cta:'Follow for the next update.',visual_beats:['headline','problem','impact','future']}; }\nconst topics = items.map(i=>i.json.title?i.json:null).filter(Boolean);\nconst out = topics.map(scriptFor); fs.mkdirSync('output',{recursive:true}); fs.writeFileSync('output/scripts.json',JSON.stringify(out,null,2)); return out.map(json=>({json}));\n"
+      },
+      "id": "6e18b520-6d81-4ad7-8947-45e387a55d93",
+      "name": "Generate Script Locally",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.script}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "2b1a579d-c78d-48c8-9cf5-2ce0170a08a4",
+      "name": "Validate Script Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/scripts.json"
+      },
+      "id": "43f18a5f-8c2c-43ba-b69b-516c438847b0",
+      "name": "Read Scripts File",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Topics JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Topics JSON": {
+      "main": [
+        [
+          {
+            "node": "Load Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Topics": {
+      "main": [
+        [
+          {
+            "node": "Prepare Gemini Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Gemini Request": {
+      "main": [
+        [
+          {
+            "node": "Generate Script Locally",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Script Locally": {
+      "main": [
+        [
+          {
+            "node": "Validate Script Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Script Fields": {
+      "main": [
+        [
+          {
+            "node": "Read Scripts File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Generate complete title, hook, script, description, hashtags and CTA records.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
+}

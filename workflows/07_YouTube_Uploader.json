@@ -1,0 +1,168 @@
+{
+  "name": "07 YouTube Uploader",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "00d4e0d1-561c-4d83-aca5-47c30777b5fc",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/scripts.json"
+      },
+      "id": "061ecb47-9035-4ada-b692-3752c9364d43",
+      "name": "Read Scripts JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); return JSON.parse(fs.readFileSync('output/scripts.json','utf8')).map(json=>({json}));"
+      },
+      "id": "0915cbb2-45ff-4a0c-9242-6d30e8c6b6f0",
+      "name": "Load Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.id}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "ec8f9411-1385-457d-a63f-900b81019b6c",
+      "name": "Has Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python scripts/upload_batch.py --queue output/scripts.json"
+      },
+      "id": "b1474c27-d132-40ad-a666-133092c3bfaa",
+      "name": "Execute Production Step",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); fs.mkdirSync('logs',{recursive:true}); fs.appendFileSync('logs/events.jsonl', JSON.stringify({ts:new Date().toISOString(),workflow:$workflow.name,item:$json})+'\\n'); return items;"
+      },
+      "id": "4ad9c476-d89a-4eaf-83d0-0c7bd9403355",
+      "name": "Log Step Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Scripts JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Scripts JSON": {
+      "main": [
+        [
+          {
+            "node": "Load Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Batch": {
+      "main": [
+        [
+          {
+            "node": "Has Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Jobs": {
+      "main": [
+        [
+          {
+            "node": "Execute Production Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Production Step": {
+      "main": [
+        [
+          {
+            "node": "Log Step Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Batch YouTube Data API uploads with thumbnails and metadata.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
+}

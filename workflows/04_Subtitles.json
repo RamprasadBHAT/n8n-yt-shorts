@@ -1,0 +1,168 @@
+{
+  "name": "04 Subtitles",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "851ca048-be9e-47b1-a3f0-8512933d569d",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/scripts.json"
+      },
+      "id": "8f50b6f6-a660-4acf-b332-da76534e43ba",
+      "name": "Read Scripts JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); return JSON.parse(fs.readFileSync('output/scripts.json','utf8')).map(json=>({json}));"
+      },
+      "id": "eb1538b1-995f-4d94-9518-8fa5af3499b6",
+      "name": "Load Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.id}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "2e1310eb-43bb-4ec1-91d2-be63ea10c108",
+      "name": "Has Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python scripts/subtitles.py --queue output/scripts.json"
+      },
+      "id": "6b7dc713-b377-4a4d-98fb-4c8da6527484",
+      "name": "Execute Production Step",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); fs.mkdirSync('logs',{recursive:true}); fs.appendFileSync('logs/events.jsonl', JSON.stringify({ts:new Date().toISOString(),workflow:$workflow.name,item:$json})+'\\n'); return items;"
+      },
+      "id": "413297fb-46e9-4077-9554-5590936931eb",
+      "name": "Log Step Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Scripts JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Scripts JSON": {
+      "main": [
+        [
+          {
+            "node": "Load Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Batch": {
+      "main": [
+        [
+          {
+            "node": "Has Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Jobs": {
+      "main": [
+        [
+          {
+            "node": "Execute Production Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Production Step": {
+      "main": [
+        [
+          {
+            "node": "Log Step Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Batch SRT/ASS subtitle generation with timestamped caption assets.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
+}

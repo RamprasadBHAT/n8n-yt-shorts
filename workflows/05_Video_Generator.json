@@ -1,0 +1,168 @@
+{
+  "name": "05 Video Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "4785e16e-f62b-455d-a180-0e210b3ed5a8",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/scripts.json"
+      },
+      "id": "f678f39f-4688-490e-8388-96aee8a470b8",
+      "name": "Read Scripts JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); return JSON.parse(fs.readFileSync('output/scripts.json','utf8')).map(json=>({json}));"
+      },
+      "id": "b64d156f-4f2d-468e-aabb-5a9e4a9a9bde",
+      "name": "Load Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.id}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "bb9bddcc-e5eb-45a0-925d-cf40105a925b",
+      "name": "Has Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python scripts/video_batch.py --queue output/scripts.json"
+      },
+      "id": "e14e1ab2-7ee9-4984-83ed-aa501a4bbdb0",
+      "name": "Execute Production Step",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); fs.mkdirSync('logs',{recursive:true}); fs.appendFileSync('logs/events.jsonl', JSON.stringify({ts:new Date().toISOString(),workflow:$workflow.name,item:$json})+'\\n'); return items;"
+      },
+      "id": "2a981f0b-41f1-4d57-aced-1e24c7ebc58f",
+      "name": "Log Step Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Scripts JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Scripts JSON": {
+      "main": [
+        [
+          {
+            "node": "Load Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Batch": {
+      "main": [
+        [
+          {
+            "node": "Has Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Jobs": {
+      "main": [
+        [
+          {
+            "node": "Execute Production Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Production Step": {
+      "main": [
+        [
+          {
+            "node": "Log Step Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Batch visual acquisition and FFmpeg Shorts rendering.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
+}

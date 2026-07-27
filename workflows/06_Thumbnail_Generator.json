@@ -1,0 +1,168 @@
+{
+  "name": "06 Thumbnail Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "0f05bbf9-57e6-4596-88f0-4d7391749a80",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/scripts.json"
+      },
+      "id": "5242c5c1-c960-45ca-934a-4a7929e93d62",
+      "name": "Read Scripts JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); return JSON.parse(fs.readFileSync('output/scripts.json','utf8')).map(json=>({json}));"
+      },
+      "id": "fd0453fa-c362-48e0-9352-12f238ca1aca",
+      "name": "Load Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.id}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "fea477d2-6859-4f67-89f1-9490a5b5aa65",
+      "name": "Has Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python scripts/thumbnail_batch.py --queue output/scripts.json"
+      },
+      "id": "4a0188d4-7b4d-4c38-9883-bd259486eea4",
+      "name": "Execute Production Step",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); fs.mkdirSync('logs',{recursive:true}); fs.appendFileSync('logs/events.jsonl', JSON.stringify({ts:new Date().toISOString(),workflow:$workflow.name,item:$json})+'\\n'); return items;"
+      },
+      "id": "cb06a0f6-534d-4dff-ada6-67dc125aa0b5",
+      "name": "Log Step Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Scripts JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Scripts JSON": {
+      "main": [
+        [
+          {
+            "node": "Load Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Batch": {
+      "main": [
+        [
+          {
+            "node": "Has Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Jobs": {
+      "main": [
+        [
+          {
+            "node": "Execute Production Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Production Step": {
+      "main": [
+        [
+          {
+            "node": "Log Step Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Batch clickable thumbnail generation.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
+}
