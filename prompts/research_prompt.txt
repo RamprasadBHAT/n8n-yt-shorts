@@ -1,0 +1,1 @@
+Rank the candidate topics for viral YouTube Shorts. Return strict JSON array with title, angle, audience, score, keywords. Favor timely tech/AI/business stories, avoid duplicates and banned topics.

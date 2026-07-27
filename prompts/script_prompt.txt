@@ -1,0 +1,1 @@
+Create a 40 second YouTube Short script as strict JSON: title, hook, script, description, hashtags, cta, visual_beats. Make it punchy, factual, and retention optimized.
