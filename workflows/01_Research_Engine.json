@@ -14,6 +14,26 @@
     },
     {
       "parameters": {
+        "url": "https://news.google.com/rss/search?q=AI%20technology&hl=en-US&gl=US&ceid=US:en",
+        "responseFormat": "string"
+      },
+      "id": "25fb9aea-ad56-4aff-833b-b34ad9684bed",
+      "name": "Google News AI RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        260,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://hnrss.org/frontpage",
+        "responseFormat": "string"
+      },
+      "id": "041db806-0d16-41e2-b69b-d52a24fd5986",
+      "name": "Hacker News RSS",
+      "type": "n8n-nodes-base.httpRequest",
         "command": "python scripts/research_engine.py --limit 10 --output output/topics.json"
       },
       "id": "n1",
@@ -24,6 +44,94 @@
         260,
         0
       ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.reddit.com/r/technology/.rss",
+        "responseFormat": "string",
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "User-Agent",
+              "value": "AIShortsFactory/1.0"
+            }
+          ]
+        }
+      },
+      "id": "b559297d-6fb0-48a7-8bc0-6bc1011d5a69",
+      "name": "Reddit Technology RSS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        260,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "e5fa3cc8-92e1-47da-848a-468c4cdce9bb",
+      "name": "Merge Sources A",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "139e9c72-2eb2-4d91-99c1-d532d1a1785e",
+      "name": "Merge All Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [
+        760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst fs = require('fs');\nconst path = require('path');\nconst crypto = require('crypto');\nconst root = process.cwd();\nconst banned = fs.existsSync('11_Config/banned_topics.txt') ? fs.readFileSync('11_Config/banned_topics.txt','utf8').toLowerCase().split(/\\r?\\n/).filter(Boolean) : [];\nconst usedPath = path.join('state','used_topics.json');\nconst used = fs.existsSync(usedPath) ? JSON.parse(fs.readFileSync(usedPath,'utf8')) : [];\nconst seen = new Set(used.map(x => String(x.topic || '').toLowerCase()));\nfunction norm(t){return String(t||'').replace(/<[^>]+>/g,'').replace(/\\s+/g,' ').trim();}\nlet candidates=[];\nfor (const item of items) {\n  const body = item.json.body || item.json.data || item.json;\n  const text = typeof body === 'string' ? body : JSON.stringify(body);\n  const titles = [...text.matchAll(/<title><!\\[CDATA\\[(.*?)\\]\\]><\\/title>|<title>(.*?)<\\/title>|\"title\"\\s*:\\s*\"([^\"]+)\"/g)].map(m => norm(m[1]||m[2]||m[3]));\n  candidates.push(...titles);\n}\nconst fallback = fs.existsSync('11_Config/topics.txt') ? fs.readFileSync('11_Config/topics.txt','utf8').split(/\\r?\\n/).filter(Boolean).map(s => `${s} breakthrough creators should understand today`) : [];\ncandidates = candidates.length ? candidates : fallback;\nconst out=[];\nfor (const title of candidates) {\n  const lower=title.toLowerCase();\n  if (title.length < 12 || seen.has(lower) || banned.some(b => lower.includes(b))) continue;\n  if (out.some(x => x.title.toLowerCase() === lower)) continue;\n  out.push({id: crypto.createHash('sha256').update(lower).digest('hex').slice(0,16), title, angle:'Explain why this matters in under 40 seconds', keywords:title, source:'research-workflow'});\n  if (out.length === 10) break;\n}\nfs.mkdirSync('output',{recursive:true}); fs.writeFileSync('output/topics.json', JSON.stringify(out,null,2));\nreturn out.map(json => ({json}));\n"
+      },
+      "id": "4f83dc61-8b13-46af-9dac-f6097588023f",
+      "name": "Dedupe Rank Select 10",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python -c \"from pathlib import Path; Path('output').mkdir(exist_ok=True); Path('state').mkdir(exist_ok=True); Path('logs').mkdir(exist_ok=True)\""
+      },
+      "id": "af8cb43e-14b6-4778-b57d-db110477d281",
+      "name": "Ensure Output Folder",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "output/topics.json"
+      },
+      "id": "30359437-fb36-41bb-b5ac-5e55e6a18ada",
+      "name": "Read Topics File",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        100
+      ]
     }
   ],
   "connections": {
@@ -31,6 +139,88 @@
       "main": [
         [
           {
+            "node": "Google News AI RSS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Hacker News RSS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Reddit Technology RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google News AI RSS": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hacker News RSS": {
+      "main": [
+        [
+          {
+            "node": "Merge Sources A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Sources A": {
+      "main": [
+        [
+          {
+            "node": "Merge All Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit Technology RSS": {
+      "main": [
+        [
+          {
+            "node": "Merge All Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge All Sources": {
+      "main": [
+        [
+          {
+            "node": "Dedupe Rank Select 10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedupe Rank Select 10": {
+      "main": [
+        [
+          {
+            "node": "Ensure Output Folder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Topics File",
             "node": "01 Research topics",
             "type": "main",
             "index": 0
@@ -42,6 +232,25 @@
   "settings": {
     "executionOrder": "v1",
     "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Collect, merge, dedupe and persist 10 topics from real HTTP sources.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
     "saveManualExecutions": true
   },
   "meta": {

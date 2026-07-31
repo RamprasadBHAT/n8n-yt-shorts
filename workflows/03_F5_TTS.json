@@ -14,6 +14,74 @@
     },
     {
       "parameters": {
+        "operation": "read",
+        "filePath": "output/scripts.json"
+      },
+      "id": "aedd3282-d4c3-4a6e-80a7-4aa992c68433",
+      "name": "Read Scripts JSON",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); return JSON.parse(fs.readFileSync('output/scripts.json','utf8')).map(json=>({json}));"
+      },
+      "id": "f10f5742-9321-4824-b9e5-c7acbdf17afc",
+      "name": "Load Batch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.id}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "95455600-61b6-4047-9523-b4adb81ec85d",
+      "name": "Has Jobs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python scripts/voice_batch.py --queue output/scripts.json"
+      },
+      "id": "a5f302fd-dc6a-47e6-bbc4-5d7032fb0963",
+      "name": "Execute Production Step",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs=require('fs'); fs.mkdirSync('logs',{recursive:true}); fs.appendFileSync('logs/events.jsonl', JSON.stringify({ts:new Date().toISOString(),workflow:$workflow.name,item:$json})+'\\n'); return items;"
+      },
+      "id": "ecadbc70-a878-4728-bb20-cffc9c31ccd4",
+      "name": "Log Step Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
         "command": "python scripts/voice_batch.py --queue output/scripts.json"
       },
       "id": "n1",
@@ -31,6 +99,51 @@
       "main": [
         [
           {
+            "node": "Read Scripts JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Scripts JSON": {
+      "main": [
+        [
+          {
+            "node": "Load Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Batch": {
+      "main": [
+        [
+          {
+            "node": "Has Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Jobs": {
+      "main": [
+        [
+          {
+            "node": "Execute Production Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Production Step": {
+      "main": [
+        [
+          {
+            "node": "Log Step Completion",
             "node": "01 Run voice batch",
             "type": "main",
             "index": 0
@@ -42,6 +155,25 @@
   "settings": {
     "executionOrder": "v1",
     "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "timezone": "America/New_York"
+  },
+  "meta": {
+    "description": "Batch cloned voice synthesis and normalization using F5-TTS plus FFmpeg.",
+    "validatedStandardNodeTypes": [
+      "n8n-nodes-base.manualTrigger",
+      "n8n-nodes-base.scheduleTrigger",
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.code",
+      "n8n-nodes-base.merge",
+      "n8n-nodes-base.if",
+      "n8n-nodes-base.set",
+      "n8n-nodes-base.executeCommand",
+      "n8n-nodes-base.readWriteFile"
+    ]
+  },
+  "active": false,
+  "versionId": "2"
     "saveManualExecutions": true
   },
   "meta": {
