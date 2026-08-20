@@ -30,6 +30,8 @@ class VoiceConfig:
     engine: str
     reference_audio: Path
     reference_text: Path
+    speaker: str
+    speed: float
     normalize_lufs: float
     sample_rate: int
     channels: int
@@ -38,6 +40,7 @@ class VoiceConfig:
     temp_dir: Path
     f5_command: str
     ffmpeg_path: str
+    extra_args: list[str]
 
 
 def load_voice_config(settings: Settings, input_override: str | None = None, output_dir_override: str | None = None) -> VoiceConfig:
@@ -47,6 +50,8 @@ def load_voice_config(settings: Settings, input_override: str | None = None, out
         engine=str(voice.get("engine", "f5-tts")),
         reference_audio=settings.resolve_path(voice.get("reference_audio", "assets/voice/reference.wav")),
         reference_text=settings.resolve_path(voice.get("reference_text", "assets/voice/reference.txt")),
+        speaker=str(voice.get("speaker", "default")),
+        speed=float(voice.get("speed", 1.0)),
         normalize_lufs=float(voice.get("normalize_lufs", -16)),
         sample_rate=int(voice.get("sample_rate", 48000)),
         channels=int(voice.get("channels", 2)),
@@ -55,6 +60,7 @@ def load_voice_config(settings: Settings, input_override: str | None = None, out
         temp_dir=settings.path("temp"),
         f5_command=str(f5.get("command", "f5-tts_infer-cli")),
         ffmpeg_path=str(settings.get("ffmpeg_path", "ffmpeg")),
+        extra_args=[str(arg) for arg in f5.get("extra_args", [])],
     )
 
 
@@ -65,6 +71,8 @@ def validate_voice_config(config: VoiceConfig) -> None:
         raise FileNotFoundError(f"Cloned voice reference audio not found: {config.reference_audio}")
     if not config.reference_text.exists():
         raise FileNotFoundError(f"Cloned voice reference text not found: {config.reference_text}")
+    if config.speed <= 0:
+        raise ConfigError("voice.speed must be greater than zero")
     if config.sample_rate < 8000:
         raise ConfigError("voice.sample_rate must be at least 8000")
     if config.channels not in {1, 2}:
@@ -121,6 +129,11 @@ def build_f5_command(script_text: str, raw_output: Path, config: VoiceConfig) ->
         "--output_file",
         str(raw_output),
     ]
+    if config.speaker:
+        command.extend(["--speaker", config.speaker])
+    if config.speed != 1.0:
+        command.extend(["--speed", str(config.speed)])
+    command.extend(config.extra_args)
     return command
 
 
