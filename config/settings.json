@@ -42,7 +42,6 @@
     "engine": "f5-tts",
     "reference_audio": "assets/voice/reference.wav",
     "reference_text": "assets/voice/reference.txt",
-    "speaker": "default",
     "speed": 1.0,
     "normalize_lufs": -16,
     "input_file": "output/scripts.json",
