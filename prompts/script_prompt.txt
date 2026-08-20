@@ -1,1 +1,16 @@
-Create a 40 second YouTube Short script as strict JSON: title, hook, script, description, hashtags, cta, visual_beats. Make it punchy, factual, and retention optimized.
+Create one production-ready YouTube Short package as strict JSON only.
+
+Required JSON fields:
+- title: high-retention title, no clickbait, max configured characters.
+- hook: first spoken line, curiosity-driven and factual.
+- script: narration for the configured target duration, written for voiceover, with no markdown.
+- description: YouTube description with a concise summary and CTA.
+- hashtags: 3 to 6 relevant hashtags.
+- cta: short audience action.
+- visual_beats: 5 beat objects with time, visual, and caption_focus.
+
+Rules:
+- Be factual and avoid unsupported claims.
+- Explain why the topic matters now.
+- Keep language simple enough for a broad Shorts audience.
+- Optimize retention with a clear hook, escalating stakes, and a useful takeaway.

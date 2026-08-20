@@ -1,6 +1,6 @@
 {
   "project_name": "AI Shorts Factory",
-  "project_root": "D:\\EDITING & WEB DEVOLOPMENTS\\N8N-YT-SHORTS",
+  "project_root": ".",
   "videos_per_batch": 10,
   "gemini": {
     "api_key_env": "GEMINI_API_KEY",
@@ -42,9 +42,12 @@
     "engine": "f5-tts",
     "reference_audio": "assets/voice/reference.wav",
     "reference_text": "assets/voice/reference.txt",
-    "speaker": "default",
     "speed": 1.0,
-    "normalize_lufs": -16
+    "normalize_lufs": -16,
+    "input_file": "output/scripts.json",
+    "output_dir": "audio",
+    "sample_rate": 48000,
+    "channels": 2
   },
   "rendering": {
     "width": 1080,
@@ -81,5 +84,54 @@
   "logging": {
     "file": "logs/factory.log",
     "level": "INFO"
+  },
+  "research": {
+    "output_file": "output/topics.json",
+    "max_topic_age_days": 14,
+    "request_timeout_seconds": 20,
+    "use_gemini_ranking": true,
+    "gemini_temperature": 0.2,
+    "fallback_topics_file": "11_Config/topics.txt",
+    "reddit_subreddits": [
+      "technology",
+      "artificial",
+      "singularity"
+    ],
+    "rss_feeds": [
+      {
+        "name": "google_news_ai",
+        "url": "https://news.google.com/rss/search?q=AI%20technology&hl=en-US&gl=US&ceid=US:en"
+      },
+      {
+        "name": "google_news_creators",
+        "url": "https://news.google.com/rss/search?q=creator%20economy%20AI&hl=en-US&gl=US&ceid=US:en"
+      },
+      {
+        "name": "hacker_news_frontpage",
+        "url": "https://hnrss.org/frontpage"
+      }
+    ],
+    "banned_terms": [
+      "nsfw",
+      "gore",
+      "celebrity death hoax"
+    ]
+  },
+  "script_generation": {
+    "topics_file": "output/topics.json",
+    "output_file": "output/scripts.json",
+    "prompt_file": "prompts/script_prompt.txt",
+    "target_seconds": 40,
+    "words_per_minute": 155,
+    "max_title_chars": 85,
+    "temperature": 0.7,
+    "tone": "punchy, factual, curious, and accessible",
+    "default_cta": "Follow for the next AI shortcut.",
+    "default_hashtags": [
+      "#AI",
+      "#Tech",
+      "#Shorts",
+      "#Automation"
+    ]
   }
 }
