@@ -134,5 +134,15 @@
       "#Shorts",
       "#Automation"
     ]
+  },
+  "subtitles": {
+    "scripts_file": "output/scripts.json",
+    "audio_dir": "audio",
+    "output_dir": "captions",
+    "default_duration_seconds": 40,
+    "max_items": 10,
+    "words_per_caption": 6,
+    "max_caption_seconds": 3.2,
+    "ass_style": "Fontname=Arial,Fontsize=74,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=5,Shadow=0,Alignment=2,MarginV=210"
   }
 }
