@@ -44,7 +44,11 @@
     "reference_text": "assets/voice/reference.txt",
     "speaker": "default",
     "speed": 1.0,
-    "normalize_lufs": -16
+    "normalize_lufs": -16,
+    "input_file": "output/scripts.json",
+    "output_dir": "audio",
+    "sample_rate": 48000,
+    "channels": 2
   },
   "rendering": {
     "width": 1080,
@@ -63,7 +67,8 @@
     "language": "en"
   },
   "f5_tts": {
-    "command": "f5-tts_infer-cli"
+    "command": "f5-tts_infer-cli",
+    "extra_args": []
   },
   "stock": {
     "provider": "pexels",
