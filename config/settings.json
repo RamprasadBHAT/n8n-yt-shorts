@@ -67,7 +67,8 @@
     "language": "en"
   },
   "f5_tts": {
-    "command": "f5-tts_infer-cli"
+    "command": "f5-tts_infer-cli",
+    "extra_args": []
   },
   "stock": {
     "provider": "pexels",

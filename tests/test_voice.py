@@ -18,7 +18,7 @@ def write_settings(tmp_path: Path) -> Path:
         "folders": {"audio": "audio", "logs": "logs", "temp": "temp", "output": "output"},
         "logging": {"file": "logs/factory.log", "level": "INFO"},
         "ffmpeg_path": "ffmpeg-test",
-        "f5_tts": {"command": "f5-test"},
+        "f5_tts": {"command": "f5-test", "extra_args": ["--model", "F5TTS_v1_Base"]},
         "voice": {
             "engine": "f5-tts",
             "reference_audio": "assets/voice/reference.wav",
@@ -57,14 +57,14 @@ def test_load_scripts_validates_required_fields(tmp_path: Path) -> None:
         raise AssertionError("load_scripts should reject records without script text")
 
 
-def test_build_commands_use_only_supported_f5_cli_arguments_and_normalization(tmp_path: Path) -> None:
+def test_build_commands_include_cloned_voice_and_normalization(tmp_path: Path) -> None:
     settings = load_settings(write_settings(tmp_path))
     cfg = load_voice_config(settings)
     f5 = build_f5_command("hello world", tmp_path / "raw.wav", cfg)
     assert f5[:5] == ["f5-test", "--ref_audio", str(cfg.reference_audio), "--ref_text", "Reference voice text."]
-    assert "--speaker" not in f5
-    assert "--speed" not in f5
-    assert f5 == ["f5-test", "--ref_audio", str(cfg.reference_audio), "--ref_text", "Reference voice text.", "--gen_text", "hello world", "--output_file", str(tmp_path / "raw.wav")]
+    assert "--speaker" in f5 and "cloned" in f5
+    assert "--speed" in f5 and "1.1" in f5
+    assert f5[-2:] == ["--model", "F5TTS_v1_Base"]
     ffmpeg = build_normalize_command(tmp_path / "raw.wav", tmp_path / "final.wav", cfg)
     assert ffmpeg[0] == "ffmpeg-test"
     assert "loudnorm=I=-16.0:TP=-1.5:LRA=11" in ffmpeg
